@@ -7,7 +7,7 @@ public class TextGenerator {
 		int wordlenght = 1; 
 		for(int i = 0; i < textlenght; i++) {
 			char newChar = randomChar(chars);
-			if(s.endsWith(" ") && newChar == ' ') {//no double spaces
+			if((s.endsWith(" ") && newChar == ' ')|| (newChar == ' ' && s.length()==0)) {//no double spaces
 				i--;
 				continue;
 			}
