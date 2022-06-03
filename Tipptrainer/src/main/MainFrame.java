@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -17,7 +18,8 @@ public class MainFrame extends JFrame implements KeyListener{
 	private JTextField input;
 	private String text;
 	private boolean wordRemoved = false;
-
+	private int wordlenght = 0;
+	
 	public MainFrame() {
 		super("TippTrainer");
 		setExtendedState(MAXIMIZED_BOTH);
@@ -30,7 +32,7 @@ public class MainFrame extends JFrame implements KeyListener{
 	}
 
 	private void createComponents() {
-		label = new JLabel("", SwingConstants.CENTER);
+		label = new JLabel("");
 		label.setFont(new Font("Arial", Font.BOLD, 100));
 		input = new JTextField();
 		input.setHorizontalAlignment(SwingConstants.CENTER);
@@ -61,6 +63,19 @@ public class MainFrame extends JFrame implements KeyListener{
 				}
 				label.setText(text);
 				wordRemoved = true;
+				wordlenght = 0;
+				return;
+			}
+		}
+		if(text.charAt(0+wordlenght) == e.getKeyChar()) {
+			wordlenght++;
+		}else {
+			JOptionPane.showMessageDialog(null, "vertippt");
+			wordRemoved = false;
+			String s = input.getText();
+			if(s.length() > 0) {
+				s = s.substring(0, s.length()-1);
+				input.setText(s);
 			}
 		}
 	}
