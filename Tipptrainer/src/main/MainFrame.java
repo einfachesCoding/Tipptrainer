@@ -1,9 +1,12 @@
 package main;
 
+import java.awt.Adjustable;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -13,6 +16,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -24,26 +29,25 @@ public class MainFrame extends JFrame implements KeyListener{
 	private String text;
 	private boolean wordRemoved = false;
 	private int wordlenght = 0;
+	private JPanel settingPanel;
+	private int currentLektion = 0;
+	private JScrollBar bar;
 	
 	public MainFrame() {
 		super("TippTrainer");
 		setExtendedState(MAXIMIZED_BOTH);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		getContentPane().setLayout(new GridLayout(2,1));
+		getContentPane().setLayout(new GridLayout(3,1));
+		settingPanel = new JPanel(new GridLayout(1,2));
+		getContentPane().add(settingPanel);
 		createComponents();
+		createLections();
 		input.addKeyListener(this);
 		input.requestFocus();
 		setVisible(true);
 	}
 
-	private void createComponents() {
-		label = new JLabel("");
-		label.setFont(new Font("Arial", Font.BOLD, 100));
-		input = new JTextField();
-		input.setHorizontalAlignment(SwingConstants.CENTER);
-		input.setFont(new Font("Arial", Font.BOLD, 100));
-		text = TextGenerator.generateText(Section.getChars(0), 100, 7);
-		label.setText(text);
+	private void createLections() {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("Lektionen");
 		JMenuItem[] entry = new JMenuItem[28];
@@ -86,13 +90,40 @@ public class MainFrame extends JFrame implements KeyListener{
 					Object source = e.getSource();
 					for(int i = 0; i < entry.length; i++) {
 						if(source == entry[i]) {
-							text = TextGenerator.generateText(Section.getChars(i), 100, 7);
-							label.setText(text);	
+							currentLektion = i;
+							text = TextGenerator.generateText(Section.getChars(i), 200, 7);
+							label.setText(text);
+							bar.setEnabled(true);
 						}
 					}
 				}
 			});
 		}
+		JLabel textlenght_label = new JLabel();
+		textlenght_label.setText("Textlänge: 200");
+		settingPanel.add(textlenght_label);
+		bar = new JScrollBar(Adjustable.HORIZONTAL, 200, 100, 200, 1000);
+		bar.addAdjustmentListener(new AdjustmentListener() {
+			
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				int nr = bar.getValue();
+				textlenght_label.setText("Textlänge: " + nr);
+				text = TextGenerator.generateText(Section.getChars(currentLektion), nr, 7);
+				label.setText(text);
+			}
+		});
+		settingPanel.add(bar);
+	}
+
+	private void createComponents() {
+		label = new JLabel("");
+		label.setFont(new Font("Arial", Font.BOLD, 100));
+		input = new JTextField();
+		input.setHorizontalAlignment(SwingConstants.CENTER);
+		input.setFont(new Font("Arial", Font.BOLD, 100));
+		text = TextGenerator.generateText(Section.getChars(0), 100, 7);
+		label.setText(text);
 		getContentPane().add(label);
 		getContentPane().add(input);
 	}
@@ -105,7 +136,10 @@ public class MainFrame extends JFrame implements KeyListener{
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(text.length() == 0)return;
+		bar.setEnabled(false);
+		if(text.length() == 0) {
+			return;
+		}
 		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
 			String inputString = input.getText();
 			String word = getWord();
