@@ -9,6 +9,8 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -32,6 +34,19 @@ public class MainFrame extends JFrame implements KeyListener{
 	private JPanel settingPanel;
 	private int currentLektion = 0;
 	private JScrollBar bar;
+	private static Timer timer = new Timer();
+	private boolean timerStarted = false;
+	private int seconds = 0;
+	private TimerTask secondTimer = new TimerTask() {
+		
+		@Override
+		public void run() {
+			if(timerStarted) {
+				seconds++;
+			}
+		}
+	};
+	private int misstakes = 0;
 	
 	public MainFrame() {
 		super("TippTrainer");
@@ -45,6 +60,8 @@ public class MainFrame extends JFrame implements KeyListener{
 		input.addKeyListener(this);
 		input.requestFocus();
 		setVisible(true);
+		timer.scheduleAtFixedRate(secondTimer, 0, 1000);
+		timerStarted = true;
 	}
 
 	private void createLections() {
@@ -90,10 +107,14 @@ public class MainFrame extends JFrame implements KeyListener{
 					Object source = e.getSource();
 					for(int i = 0; i < entry.length; i++) {
 						if(source == entry[i]) {
+							wordlenght = 0;
 							currentLektion = i;
 							text = TextGenerator.generateText(Section.getChars(i), 200, 7);
 							label.setText(text);
 							bar.setEnabled(true);
+							seconds = 0;
+							misstakes = 0;
+							input.setText("");
 						}
 					}
 				}
@@ -137,41 +158,70 @@ public class MainFrame extends JFrame implements KeyListener{
 	@Override
 	public void keyPressed(KeyEvent e) {
 		bar.setEnabled(false);
-		if(text.length() == 0) {
-			return;
+		if(!timerStarted) {
+			timerStarted = true;
 		}
-		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-			String inputString = input.getText();
-			String word = getWord();
-			if(inputString.equals(word)) {
-				if(word.length()+1 > text.length()) {
-					text = text.substring(word.length(), text.length());
-				}else {
-					text = text.substring(word.length()+1, text.length());
-				}
-				label.setText(text);
-				wordRemoved = true;
-				wordlenght = 0;
+		if(wordlenght+1>text.length()){
+			if(checkInput()) {
+				end();
 				return;
+			}else {
+				String s = input.getText();
+				if(s.length() > 0) {
+					s = s.substring(0, s.length()-1);
+					input.setText(s);
+				}
 			}
 		}
 		if(text.charAt(0+wordlenght) == e.getKeyChar()) {
 			wordlenght++;
 		}else {
 			JOptionPane.showMessageDialog(null, "vertippt");
+			misstakes++;
 			wordRemoved = false;
 			String s = input.getText();
 			if(s.length() > 0) {
 				s = s.substring(0, s.length()-1);
 				input.setText(s);
 			}
+			return;
 		}
+		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+			checkInput();
+			label.setText(text);
+			wordRemoved = true;
+			if(text.length() == 0) {
+				end();
+			}
+		}
+	}
+	
+	public void end() {
+		input.setText("");
+		timerStarted = false;
+		double keysPerMinte = WPM_Calculator.getKeysPerMinute(seconds, bar.getValue());
+		new Result_Frame((int)(keysPerMinte), (int)(WPM_Calculator.getWordsPerMinute(keysPerMinte)), (int)WPM_Calculator.getAccuracy(misstakes, bar.getValue()));
+	}
+	
+	public boolean checkInput(){
+		String inputString = input.getText();
+		String word = getWord();
+		if(inputString.equals(word)) {
+			if(word.length()+1 > text.length()) {
+				text = text.substring(word.length(), text.length());
+			}else {
+				text = text.substring(word.length()+1, text.length());
+			}
+			return true;
+		}
+		return false;
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		if(wordRemoved && e.getKeyCode() == KeyEvent.VK_SPACE) {
 			input.setText("");
+			wordlenght = 0;
 		}
 	}
 	
