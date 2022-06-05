@@ -58,7 +58,7 @@ public class Typing_Speed_Frame extends JFrame implements KeyListener{
 	public Typing_Speed_Frame() {
 		super("Tippgeschwindigkeitstest");
 		setExtendedState(MAXIMIZED_BOTH);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		getContentPane().setLayout(new GridLayout(2,1));
 		createComponents();
 		input.addKeyListener(this);
