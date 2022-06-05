@@ -1,4 +1,4 @@
-package main;
+package utils;
 
 public class Section {
 	private static char [][] sections = {{'f','j',' '},{'d','k',' '},{'f','j','d','k',' '},

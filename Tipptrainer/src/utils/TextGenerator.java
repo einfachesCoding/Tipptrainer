@@ -1,8 +1,8 @@
-package main;
+package utils;
 
 public class TextGenerator {
 		
-	public static String generateText(char[] chars, int textlenght, int MAX_WORDLENGHT) {
+	public static String generateTextFromChars(char[] chars, int textlenght, int MAX_WORDLENGHT) {
 		String s = "";
 		int wordlenght = 1; 
 		for(int i = 0; i < textlenght; i++) {
@@ -25,5 +25,14 @@ public class TextGenerator {
 	public static char randomChar(char[] chars) {
 		int nr = (int)(Math.random()*chars.length);
 		return chars[nr];
+	}
+	
+	public static String generateTextFromWords(String[] words){
+		String text = "";
+		for(int i = 0; i < 1000; i++) {
+			int nr = (int)(Math.random()*words.length);
+			text = text + words[nr] + " ";
+		}
+		return text;	
 	}
 }

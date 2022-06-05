@@ -1,4 +1,4 @@
-package main;
+package utils;
 
 import java.awt.GridLayout;
 
@@ -20,6 +20,18 @@ public class Result_Frame extends JFrame{
 		getContentPane().add(cpmLabel);
 		getContentPane().add(wpmLabel);
 		getContentPane().add(accuracyLabel);
+		setVisible(true);
+	}
+	
+	public Result_Frame(int cpm, int wpm) {
+		super("Ergebnis");
+		setSize(700,500);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		JLabel cpmLabel = new JLabel("Anschläge pro Minute: " + cpm);
+		JLabel wpmLabel = new JLabel("Wörter pro Minute: " + wpm);
+		getContentPane().setLayout(new GridLayout(1, 2));
+		getContentPane().add(cpmLabel);
+		getContentPane().add(wpmLabel);
 		setVisible(true);
 	}
 }
