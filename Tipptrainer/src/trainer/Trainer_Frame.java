@@ -1,13 +1,9 @@
 package trainer;
 
-import java.awt.Adjustable;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Timer;
@@ -18,8 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.SwingConstants;
 
 import utils.Result_Frame;
@@ -32,9 +26,8 @@ public class Trainer_Frame extends JFrame implements KeyListener{
 	private static final long serialVersionUID = 1L;
 	private JLabel label;
 	private String text;
-	private JPanel settingPanel;
 	private int currentLektion = 0;
-	private JScrollBar bar;
+	private int textlenght = 200;
 	private static Timer timer = new Timer();
 	private boolean timerStarted = false;
 	private int seconds = 0;
@@ -53,14 +46,12 @@ public class Trainer_Frame extends JFrame implements KeyListener{
 		super("TippTrainer");
 		setExtendedState(MAXIMIZED_BOTH);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		getContentPane().setLayout(new GridLayout(2,1));
-		settingPanel = new JPanel(new GridLayout(1,2));
-		getContentPane().add(settingPanel);
+		getContentPane().setLayout(new GridLayout(1,1));
 		label = new JLabel("", SwingConstants.LEFT);
 		label.setFont(new Font("Arial", Font.PLAIN, 100));
-		generateText(200);
 		getContentPane().add(label);
 		createLections();
+		generateText(textlenght);
 		addKeyListener(this);
 		requestFocus();
 		setVisible(true);
@@ -111,8 +102,7 @@ public class Trainer_Frame extends JFrame implements KeyListener{
 					for(int i = 0; i < entry.length; i++) {
 						if(source == entry[i]) {
 							currentLektion = i;
-							generateText(200);
-							bar.setEnabled(true);
+							generateText(textlenght);
 							seconds = 0;
 							misstakes = 0;
 						}
@@ -120,20 +110,6 @@ public class Trainer_Frame extends JFrame implements KeyListener{
 				}
 			});
 		}
-		JLabel textlenght_label = new JLabel();
-		textlenght_label.setText("Textlänge: 200");
-		settingPanel.add(textlenght_label);
-		bar = new JScrollBar(Adjustable.HORIZONTAL, 200, 100, 200, 1000);
-		bar.addAdjustmentListener(new AdjustmentListener() {
-			
-			@Override
-			public void adjustmentValueChanged(AdjustmentEvent e) {
-				int nr = bar.getValue();
-				textlenght_label.setText("Textlänge: " + nr);
-				generateText(nr);
-			}
-		});
-		settingPanel.add(bar);
 	}
 	
 	private void generateText(int textlenght) {
@@ -151,7 +127,6 @@ public class Trainer_Frame extends JFrame implements KeyListener{
 	public void keyPressed(KeyEvent e) {
 		if(!timerStarted && text.length() != 0) {
 			timerStarted = true;
-			bar.setEnabled(false);
 		}
 		if (e.getKeyChar() == text.charAt(0)) {
 			text = text.substring(1, text.length());
@@ -166,8 +141,8 @@ public class Trainer_Frame extends JFrame implements KeyListener{
 	
 	public void end() {
 		timerStarted = false;
-		double keysPerMinte = WPM_Calculator.getKeysPerMinute(seconds, bar.getValue());
-		new Result_Frame((int)(keysPerMinte), (int)(WPM_Calculator.getWordsPerMinute(keysPerMinte)), (int)WPM_Calculator.getAccuracy(misstakes, bar.getValue()));
+		double keysPerMinte = WPM_Calculator.getKeysPerMinute(seconds, textlenght);
+		new Result_Frame((int)(keysPerMinte), (int)(WPM_Calculator.getWordsPerMinute(keysPerMinte)), (int)WPM_Calculator.getAccuracy(misstakes, textlenght));
 	}
 	
 	
