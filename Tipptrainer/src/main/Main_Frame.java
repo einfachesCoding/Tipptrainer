@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
+import trainer.Trainer_Frame;
 import typing_speed.Typing_Speed_Frame;
 
 public class Main_Frame extends JFrame implements ActionListener{
@@ -44,6 +45,7 @@ public class Main_Frame extends JFrame implements ActionListener{
 			new Typing_Speed_Frame();
 		}
 		if(Source == trainer) {
+			new Trainer_Frame();
 			return;
 		}
 		if(Source == multiplayer) {
