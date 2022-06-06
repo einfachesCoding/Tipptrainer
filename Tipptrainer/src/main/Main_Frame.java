@@ -43,6 +43,7 @@ public class Main_Frame extends JFrame implements ActionListener{
 		Object Source = e.getSource();
 		if(Source == typing_speed) {
 			new Typing_Speed_Frame();
+			return;
 		}
 		if(Source == trainer) {
 			new Trainer_Frame();

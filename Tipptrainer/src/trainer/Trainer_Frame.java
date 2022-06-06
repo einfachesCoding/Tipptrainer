@@ -24,10 +24,11 @@ import utils.WPM_Calculator;
 public class Trainer_Frame extends JFrame implements KeyListener{
 	
 	private static final long serialVersionUID = 1L;
-	private JLabel label;
-	private String text;
-	private int currentLektion = 0;
-	private int textlenght = 200;
+	private static JLabel label;
+	private static String text;
+	private static int currentLektion = 0;
+	private static int textlenght = 200;
+	private static int chartype = 0;
 	private static Timer timer = new Timer();
 	private boolean timerStarted = false;
 	private int seconds = 0;
@@ -41,6 +42,7 @@ public class Trainer_Frame extends JFrame implements KeyListener{
 		}
 	};
 	private int misstakes = 0;
+	private boolean lastKeyWasAMisstake = false;
 	
 	public Trainer_Frame() {
 		super("TippTrainer");
@@ -51,7 +53,7 @@ public class Trainer_Frame extends JFrame implements KeyListener{
 		label.setFont(new Font("Arial", Font.PLAIN, 100));
 		getContentPane().add(label);
 		createLections();
-		generateText(textlenght);
+		generateText();
 		addKeyListener(this);
 		requestFocus();
 		setVisible(true);
@@ -61,7 +63,7 @@ public class Trainer_Frame extends JFrame implements KeyListener{
 	private void createLections() {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("Lektionen");
-		JMenuItem[] entry = new JMenuItem[28];
+		JMenuItem[] entry = new JMenuItem[29];
 		entry[0] = new JMenuItem("1. Lektion: f,j");
 		entry[1] = new JMenuItem("2. Lektion: d,k");
 		entry[2] = new JMenuItem("3. Lektion: f,j,d,k");
@@ -90,6 +92,7 @@ public class Trainer_Frame extends JFrame implements KeyListener{
 		entry[25] = new JMenuItem("26. Lektion: a,s,d,f,g,h,j,k,l,ö,ä,q,w,e,r,t,z,u,i,o,p,ü");
 		entry[26] = new JMenuItem("27. Lektion: a,s,d,f,g,h,j,k,l,ö,ä,y,x,c,v,b,n,m,.-");
 		entry[27] = new JMenuItem("28. Lektion: a,s,d,f,g,h,j,k,l,ö,ä,q,w,e,r,t,z,u,i,o,p,ü,y,x,c,v,b,n,m,.-");
+		entry[28] = new JMenuItem("Einstellungen");
 		setJMenuBar(menuBar);
 		menuBar.add(menu);
 		for(int i = 0; i < entry.length; i++) {
@@ -101,8 +104,12 @@ public class Trainer_Frame extends JFrame implements KeyListener{
 					Object source = e.getSource();
 					for(int i = 0; i < entry.length; i++) {
 						if(source == entry[i]) {
+							if(i == 28) {
+								new Setting_Frame();
+								return;
+							}
 							currentLektion = i;
-							generateText(textlenght);
+							generateText();
 							seconds = 0;
 							misstakes = 0;
 						}
@@ -112,8 +119,26 @@ public class Trainer_Frame extends JFrame implements KeyListener{
 		}
 	}
 	
-	private void generateText(int textlenght) {
-		text = TextGenerator.generateTextFromChars(Section.getChars(currentLektion), textlenght, 7);
+	public static void setTextlenght(int newTextlenght) {
+		textlenght = newTextlenght;
+		generateText();
+	}
+	
+	public static void setChartype(int newChartype) {
+		chartype = newChartype;
+		generateText();
+	}
+	
+	public static int getTextlenght() {
+		return textlenght;
+	}
+	
+	public static int getChartype() {
+		return chartype;
+	}
+	
+	private static void generateText() {
+		text = TextGenerator.generateTextFromChars(Section.getChars(currentLektion), textlenght, 7, chartype);
 		label.setText(text);
 	}
 
@@ -129,13 +154,17 @@ public class Trainer_Frame extends JFrame implements KeyListener{
 			timerStarted = true;
 		}
 		if (e.getKeyChar() == text.charAt(0)) {
+			lastKeyWasAMisstake = false;
 			text = text.substring(1, text.length());
 			label.setText(text);
 			if(text.length() == 0) {
 				end();
 			}
 		}else {
-			misstakes++;
+			if(!lastKeyWasAMisstake) {
+				misstakes++;
+				lastKeyWasAMisstake = true;
+			}
 		}
 	}
 	
