@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import multiplayer.Connector;
 import trainer.Trainer_Frame;
@@ -51,7 +52,18 @@ public class Main_Frame extends JFrame implements ActionListener{
 			return;
 		}
 		if(Source == multiplayer) {
-			new Connector();
+			/*
+			String address = JOptionPane.showInputDialog("Gib eine Netzwerkadresse ein:");
+			String portString = JOptionPane.showInputDialog("Gib einen Port ein:");
+			int port = 0;
+			try {
+				port = Integer.parseInt(portString);
+			}catch (NumberFormatException x) {
+				JOptionPane.showMessageDialog(null, "Der Port muss eine Zahl sein!");
+				return;
+			}
+			*/
+			Connector c = new Connector(/*address, port*/);
 			return;
 		}
 	}
