@@ -8,7 +8,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import multiplayer.Connector;
+import multiplayer.MyClient;
+import multiplayer.MyServer;
 import trainer.Trainer_Frame;
 import typing_speed.Typing_Speed_Frame;
 
@@ -52,19 +53,33 @@ public class Main_Frame extends JFrame implements ActionListener{
 			return;
 		}
 		if(Source == multiplayer) {
-			/*
-			String address = JOptionPane.showInputDialog("Gib eine Netzwerkadresse ein:");
-			String portString = JOptionPane.showInputDialog("Gib einen Port ein:");
-			int port = 0;
-			try {
-				port = Integer.parseInt(portString);
-			}catch (NumberFormatException x) {
-				JOptionPane.showMessageDialog(null, "Der Port muss eine Zahl sein!");
-				return;
+			int choose = JOptionPane.showConfirmDialog(null, "Server erstellen?");
+			if(choose == JOptionPane.YES_OPTION) {
+				String portString = JOptionPane.showInputDialog(null, "Gib einen Port ein:");
+				int port = 0;
+				try {
+					port = Integer.parseInt(portString);
+				}catch (NumberFormatException x) {
+					JOptionPane.showMessageDialog(null, "Der Port muss eine Zahl sein!");
+					return;
+				}
+				new MyServer(port);
+				String name = JOptionPane.showInputDialog("Gib einen Namen ein");
+				MyClient c = new MyClient("localhost", port, name);
 			}
-			*/
-			Connector c = new Connector(/*address, port*/);
-			return;
+			if(choose == JOptionPane.NO_OPTION) {
+				String adress = JOptionPane.showInputDialog("Gib eine Serveradresse ein:");
+				String portString = JOptionPane.showInputDialog(null, "Gib einen Port ein:");
+				int port = 0;
+				try {
+					port = Integer.parseInt(portString);
+				}catch (NumberFormatException x) {
+					JOptionPane.showMessageDialog(null, "Der Port muss eine Zahl sein!");
+					return;
+				}
+				String name = JOptionPane.showInputDialog("Gib einen Namen ein");
+				new MyClient(adress, port, name);
+			}
 		}
 	}
 }
