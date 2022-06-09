@@ -38,7 +38,16 @@ public class Main_Frame extends JFrame implements ActionListener{
 	}
 	
 	public static void main(String[] args) {
-		new Main_Frame();
+		new MyServer(8000);
+		new MyClient("localhost", 8000, "ajflösakdjf");
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		new MyClient("localhost", 8000, "asjdflad");
+		//new Main_Frame();
 	}
 
 	@Override
@@ -65,7 +74,7 @@ public class Main_Frame extends JFrame implements ActionListener{
 				}
 				new MyServer(port);
 				String name = JOptionPane.showInputDialog("Gib einen Namen ein");
-				MyClient c = new MyClient("localhost", port, name);
+				new MyClient("localhost", port, name);
 			}
 			if(choose == JOptionPane.NO_OPTION) {
 				String adress = JOptionPane.showInputDialog("Gib eine Serveradresse ein:");

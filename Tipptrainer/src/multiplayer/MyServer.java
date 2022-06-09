@@ -10,10 +10,15 @@ import com.blogspot.debukkitsblog.net.Server;
 
 public class MyServer extends Server{
 	
-	ArrayList<Player> players = new ArrayList<>(); 
+	ArrayList<Player> players = new ArrayList<>();
+	ArrayList<Color> colors = new ArrayList();
 
 	public MyServer(int port) {
 		super(port);
+		colors.add(Color.green);
+		colors.add(Color.red);
+		colors.add(Color.blue);
+		colors.add(Color.black);
 	}
 
 	@Override
@@ -22,8 +27,15 @@ public class MyServer extends Server{
 			
 			@Override
 			public void run(Datapackage pack, Socket socket) {
-				players.add(new Player((String)pack.get(1), 0, Color.red));
-				sendReply(socket, "Dies ist ein test Text!");
+				if(colors.size() == 0) {
+					sendReply(socket, "OK");
+					return;
+				}
+				int nr = (int)(Math.random()*colors.size());
+				players.add(new Player((String)pack.get(1), 0, colors.get(nr)));
+				colors.remove(nr);
+				broadcastMessage(new Datapackage("PROGRESS_CHANGED", players));
+				sendReply(socket, "Dies ist ein test Text!", 5);
 			}
 		});
 		this.registerMethod("PROGRESS_CHANGED", new Executable() {
@@ -34,17 +46,10 @@ public class MyServer extends Server{
 				for (int i = 0; i < players.size(); i++) {
 					if(players.get(i).getName().equals(playername)) {
 						players.get(i).setProgress((int)pack.get(2));
-						sendReply(socket, "OK");
 						broadcastMessage(new Datapackage("PROGRESS_CHANGED", players));
+						sendReply(socket, "OK");
 					}
 				}
-			}
-		});
-		this.registerMethod("GET_PLAYERS", new Executable() {
-			
-			@Override
-			public void run(Datapackage pack, Socket socket) {
-				sendReply(socket, players);
 			}
 		});
 	}
